@@ -4,6 +4,8 @@
 The goal of the game is simple: use all numbers from base set to fill numbers in blue set and green set. If you have used all of the numbers in base set and the sum of the numbers in blue set equals the sum of the numbers in green set, you win!
 
 Try it out @ https://e-quate-76418.firebaseapp.com
+
+#Simple Game Mode Demo
 ![E-Quate - Animated gif demo](./src/assets/images/EquateGifDemo.gif)
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.0.7.
