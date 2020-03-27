@@ -1,0 +1,332 @@
+
+<div id="gameCont">
+    <div [hidden]="showSettings == false" style="width:100%; background-color: darkgray; position: absolute; z-index: 1;">
+        <svg (click)="showSettings = false" style="position: absolute; right:10px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black" width="40px" height="40px"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M18.3 5.71c-.39-.39-1.02-.39-1.41 0L12 10.59 7.11 5.7c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41L10.59 12 5.7 16.89c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0L12 13.41l4.89 4.89c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z"/></svg>
+        <h1 style="text-align: center;">Settings</h1>
+        <h4 style="text-align: center;">Amount of Numbers: {{numberOfNumbers}}</h4>
+        <mat-slider style="margin-left:10%; width: 80%;"
+            [max]="12"
+            [min]="4"
+            [step]="4"
+            [(ngModel)]="numberOfNumbers"
+            >
+        </mat-slider>
+        <h4 style="text-align: center;">Minimum Number Range: {{minNumberRange}}</h4>
+        <mat-slider style="margin-left:10%; width: 80%;"
+            [max]="20"
+            [min]="-25"
+            [step]="1"
+            [(ngModel)]="minNumberRange"
+            >
+        </mat-slider>
+        <h4 style="text-align: center;">Maximum Number Range: {{maxNumberRange}}</h4>
+        <mat-slider style="margin-left:10%; width: 80%;"
+            [max]="25"
+            [min]="-20"
+            [step]="1"
+            [(ngModel)]="maxNumberRange"
+            >
+        </mat-slider>
+        <div [hidden]="maxNumberRange > minNumberRange" style="color: red; text-align: center;">
+            Max Number Range must be larger than Min Number Range.
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <button (click)="startGame()" [disabled]="maxNumberRange <= minNumberRange" class="settingsSubmitButton"><b>Start</b></button>
+        </div>
+        <div style="text-align: center; margin-top: 20px; padding-left: 5px; padding-right: 5px;">
+            <h3>Instructions</h3>
+        <h4>
+            The goal of the game is simple: use all numbers from base set to fill numbers in blue set and green set. If you have used all of the numbers in base set and the sum of the numbers in blue set equals the sum of the numbers in green set, you win!
+        </h4>
+        <img height="150px" src="../assets/images/InstructionPic.JPG" alt="Instruction Image">
+        <h3>Demo</h3>
+            <img id="demoGif" src="../assets/images/EquateGifDemo.gif" alt="DemoGif">
+        </div>
+    </div>
+    <svg (click)="showSettings = true" style="position: absolute; right:10px" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" viewBox="0 0 24 24" fill="black" width="40px" height="40px"><g><path d="M0,0h24v24H0V0z" fill="none"/><path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></g></svg>
+  <h1 style="text-align: center;">E-Quate</h1>
+  <mat-grid-list cols="19" rowHeight="50px">
+    <mat-grid-tile
+        [colspan]="1"
+        [rowspan]="1">
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="numBlocks[0]" class="tileCont1" (click)="leftSideNumberDiscard(0)"
+        [colspan]="2"
+        [rowspan]="1">
+        {{numBlocks[0].leftStrValue}}
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="numBlocks[1]" class="tileCont1" (click)="leftSideNumberDiscard(1)"
+        [colspan]="2"
+        [rowspan]="1">
+        {{numBlocks[1].leftStrValue}}
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="numBlocks[2]" class="tileCont1" (click)="leftSideNumberDiscard(2)" 
+        [colspan]="2"
+        [rowspan]="1">
+        {{numBlocks[2].leftStrValue}}
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="numBlocks[3]" class="tileCont1" (click)="leftSideNumberDiscard(3)" 
+        [colspan]="2"
+        [rowspan]="1">
+        {{numBlocks[3].leftStrValue}}
+    </mat-grid-tile>
+
+    <!-- Middle Divider -->
+    <mat-grid-tile class="tileContPlatform"
+        [colspan]="1"
+        [rowspan]="1">
+    </mat-grid-tile>
+
+    <mat-grid-tile *ngIf="numBlocks[0]" class="tileCont2" (click)="rightSideNumberDiscard(0)"
+        [colspan]="2"
+        [rowspan]="1">
+        {{numBlocks[0].rightStrValue}}
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="numBlocks[1]" class="tileCont2" (click)="rightSideNumberDiscard(1)"
+        [colspan]="2"
+        [rowspan]="1">
+        {{numBlocks[1].rightStrValue}}
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="numBlocks[2]" class="tileCont2" (click)="rightSideNumberDiscard(2)"
+        [colspan]="2"
+        [rowspan]="1">
+        {{numBlocks[2].rightStrValue}}
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="numBlocks[3]" class="tileCont2" (click)="rightSideNumberDiscard(3)"
+        [colspan]="2"
+        [rowspan]="1">
+        {{numBlocks[3].rightStrValue}}
+    </mat-grid-tile>
+  </mat-grid-list>
+
+  <!-- Second Row -->
+  
+  <mat-grid-list cols="19" rowHeight="50px">
+    <mat-grid-tile
+        [colspan]="1"
+        [rowspan]="1">
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="numBlocks[4]" class="tileCont1" (click)="leftSideNumberDiscard(4)"
+        [colspan]="2"
+        [rowspan]="1">
+        {{numBlocks[4].leftStrValue}}
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="numBlocks[5]" class="tileCont1" (click)="leftSideNumberDiscard(5)"
+        [colspan]="2"
+        [rowspan]="1">
+        {{numBlocks[5].leftStrValue}}
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="numBlocks[6]" class="tileCont1" (click)="leftSideNumberDiscard(6)"
+        [colspan]="2"
+        [rowspan]="1">
+        {{numBlocks[6].leftStrValue}}
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="numBlocks[7]" class="tileCont1" (click)="leftSideNumberDiscard(7)" 
+        [colspan]="2"
+        [rowspan]="1">
+        {{numBlocks[7].leftStrValue}}
+    </mat-grid-tile>
+
+    <!-- Middle Divider -->
+    <mat-grid-tile class="tileContPlatform"
+        [colspan]="1"
+        [rowspan]="1">
+    </mat-grid-tile>
+
+    <mat-grid-tile *ngIf="numBlocks[4]" class="tileCont2" (click)="rightSideNumberDiscard(4)"
+        [colspan]="2"
+        [rowspan]="1">
+        {{numBlocks[4].rightStrValue}}
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="numBlocks[5]" class="tileCont2" (click)="rightSideNumberDiscard(5)"
+        [colspan]="2"
+        [rowspan]="1">
+        {{numBlocks[5].rightStrValue}}
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="numBlocks[6]" class="tileCont2" (click)="rightSideNumberDiscard(6)"
+        [colspan]="2"
+        [rowspan]="1">
+        {{numBlocks[6].rightStrValue}}
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="numBlocks[7]" class="tileCont2" (click)="rightSideNumberDiscard(7)"
+        [colspan]="2"
+        [rowspan]="1">
+        {{numBlocks[7].rightStrValue}}
+    </mat-grid-tile>
+  </mat-grid-list>
+  
+<!-- Third Row -->
+  <mat-grid-list cols="19" rowHeight="50px">
+    <mat-grid-tile
+        [colspan]="1"
+        [rowspan]="1">
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="numBlocks[8]" class="tileCont1" (click)="leftSideNumberDiscard(8)"
+        [colspan]="2"
+        [rowspan]="1">
+        {{numBlocks[8].leftStrValue}}
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="numBlocks[9]"class="tileCont1" (click)="leftSideNumberDiscard(9)"
+        [colspan]="2"
+        [rowspan]="1">
+        {{numBlocks[9].leftStrValue}}
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="numBlocks[10]" class="tileCont1" (click)="leftSideNumberDiscard(10)"
+        [colspan]="2"
+        [rowspan]="1">
+        {{numBlocks[10].leftStrValue}}
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="numBlocks[11]" class="tileCont1" (click)="leftSideNumberDiscard(11)"
+        [colspan]="2"
+        [rowspan]="1">
+        {{numBlocks[11].leftStrValue}}
+    </mat-grid-tile>
+    
+
+    <!-- Middle Divider -->
+    <mat-grid-tile class="tileContPlatform"
+        [colspan]="1"
+        [rowspan]="1">
+    </mat-grid-tile>
+
+    <mat-grid-tile *ngIf="numBlocks[8]" class="tileCont2" (click)="rightSideNumberDiscard(8)"
+        [colspan]="2"
+        [rowspan]="1">
+        {{numBlocks[8].rightStrValue}}
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="numBlocks[9]" class="tileCont2" (click)="rightSideNumberDiscard(9)"
+        [colspan]="2"
+        [rowspan]="1">
+        {{numBlocks[9].rightStrValue}}
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="numBlocks[10]" class="tileCont2" (click)="rightSideNumberDiscard(10)"
+        [colspan]="2"
+        [rowspan]="1">
+        {{numBlocks[10].rightStrValue}}
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="numBlocks[11]" class="tileCont2" (click)="rightSideNumberDiscard(11)"
+        [colspan]="2"
+        [rowspan]="1">
+        {{numBlocks[11].rightStrValue}}
+    </mat-grid-tile>
+  </mat-grid-list>
+
+
+  <!-- spacer -->
+  <mat-grid-list cols="14" rowHeight="120px">
+    <mat-grid-tile
+        [colspan]="14"
+        [rowspan]="1">
+        <div [hidden]="winStatus == false" style="text-align: center;">
+            <h2>Winner winner chicken dinner!</h2>
+            <div>
+                <button class="winButton" (click)="startGame()"><b>New Game</b></button>
+            </div>
+        </div>
+    </mat-grid-tile>
+  </mat-grid-list>
+
+  <!-- numbers row 1-->
+  <mat-grid-list cols="18" rowHeight="15px">
+    <mat-grid-tile 
+        [colspan]="1"
+        [rowspan]="2">
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="numBlocks[0]" class="gridItem" (click)="numberClick($event, 1)"
+        [colspan]="4"
+        [rowspan]="2">
+        {{numBlocks[0].middleStrValue}}
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="numBlocks[1]" class="gridItem" (click)="numberClick($event, 2)"
+        [colspan]="4"
+        [rowspan]="2">
+        {{numBlocks[1].middleStrValue}}
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="numBlocks[2]" class="gridItem" (click)="numberClick($event, 3)"
+        [colspan]="4"
+        [rowspan]="2">
+        {{numBlocks[2].middleStrValue}}
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="numBlocks[3]" class="gridItem" (click)="numberClick($event, 4)"
+        [colspan]="4"
+        [rowspan]="2">
+        {{numBlocks[3].middleStrValue}}
+    </mat-grid-tile>
+  </mat-grid-list>
+
+   <!-- spacer -->
+   <mat-grid-list cols="13" rowHeight="25px">
+    <mat-grid-tile
+        [colspan]="13"
+        [rowspan]="1">
+    </mat-grid-tile>
+  </mat-grid-list>
+
+  <!-- numbers row 2-->
+  <mat-grid-list cols="18" rowHeight="15px">
+    <mat-grid-tile 
+        [colspan]="1"
+        [rowspan]="2">
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="numBlocks[4]" class="gridItem" (click)="numberClick($event, 5)"
+        [colspan]="4"
+        [rowspan]="2">
+        {{numBlocks[4].middleStrValue}}
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="numBlocks[5]" class="gridItem" (click)="numberClick($event, 6)"
+        [colspan]="4"
+        [rowspan]="2">
+        {{numBlocks[5].middleStrValue}}
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="numBlocks[6]" class="gridItem" (click)="numberClick($event, 7)"
+        [colspan]="4"
+        [rowspan]="2">
+        {{numBlocks[6].middleStrValue}}
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="numBlocks[7]" class="gridItem" (click)="numberClick($event, 8)"
+        [colspan]="4"
+        [rowspan]="2">
+        {{numBlocks[7].middleStrValue}}
+    </mat-grid-tile>
+  </mat-grid-list>
+
+   <!-- spacer -->
+   <mat-grid-list cols="13" rowHeight="25px">
+    <mat-grid-tile
+        [colspan]="13"
+        [rowspan]="1">
+    </mat-grid-tile>
+  </mat-grid-list>
+  
+  <!-- Numbers Row 3 -->
+  <mat-grid-list cols="18" rowHeight="15px">
+        <mat-grid-tile 
+        [colspan]="1"
+        [rowspan]="2">
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="numBlocks[8]" class="gridItem" (click)="numberClick($event, 9)"
+        [colspan]="4"
+        [rowspan]="2">
+        {{numBlocks[8].middleStrValue}}
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="numBlocks[9]" class="gridItem" (click)="numberClick($event, 10)"
+        [colspan]="4"
+        [rowspan]="2">
+        {{numBlocks[9].middleStrValue}}
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="numBlocks[10]" class="gridItem" (click)="numberClick($event, 11)"
+        [colspan]="4"
+        [rowspan]="2">
+        {{numBlocks[10].middleStrValue}}
+    </mat-grid-tile>
+    <mat-grid-tile *ngIf="numBlocks[11]" class="gridItem" (click)="numberClick($event, 12)"
+        [colspan]="4"
+        [rowspan]="2">
+        {{numBlocks[11].middleStrValue}}
+    </mat-grid-tile>
+    <mat-grid-tile 
+        [colspan]="4"
+        [rowspan]="2">
+    </mat-grid-tile>
+  </mat-grid-list>
+</div>
