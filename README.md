@@ -5,9 +5,10 @@ The goal of the game is simple: use all numbers from base set to fill numbers in
 
 Try it out @ https://e-quate-76418.firebaseapp.com
 
-#Simple Game Mode Demo
+## Simple Game Mode Demo
 ![E-Quate - Animated gif demo](./src/assets/images/EquateGifDemo.gif)
 
+## Angular Details
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 9.0.7.
 
 ## Development server
