@@ -12,7 +12,7 @@ interface NumBlock {
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  title = 'levelGame';
+  title = 'E-Quate';
   numbers:number[] = [];
   numBlocks:NumBlock [] = [];
   alert = '';
@@ -21,12 +21,74 @@ export class AppComponent implements OnInit {
   maxNumberRange = 10;
   numberOfNumbers = 8;
   winStatus = false;
+  showSums;
+  showGreaterThanSymbol;
+  toggleCount = 0;
+  toggleSumCount = 0;
+  leftSum = 0;
+  rightSum = 0;
+  isInit = true;
+  landingPageEnabled = true;
+  currentLevel = 1;
+  hideFilters = false;
+
 
   ngOnInit() {
+    if(sessionStorage.getItem('gameItems') !== null){
+      let items = JSON.parse(sessionStorage.getItem('gameItems'));
+      this.minNumberRange = items.minNumberRange;
+      this.maxNumberRange = items.maxNumberRange;
+      this.numberOfNumbers = items.numberOfNumbers;
+      this.showGreaterThanSymbol = items.showGreaterThanSymbol;
+      this.showSums = items.showSums;
+      if(this.showGreaterThanSymbol === true) {
+        console.log('.showGreaterThanSymbol === true');
+        document.getElementById('greaterThanSwitch').click();
+      }
+      if(this.showSums === true) {
+        console.log('this.showSums === true');
+        document.getElementById('showSumSwitch').click();
+      }
+    } else {
+      this.showSums = false;
+      this.showGreaterThanSymbol = false;
+    }
+    this.isInit = false;
     this.startGame();
   }
 
+  fullScreen() {
+    if (!document['fullscreenElement']) {
+      document.documentElement.requestFullscreen();
+  } else {
+    if (document['exitFullscreen']) {
+      document.exitFullscreen(); 
+    }
+  }
+  }
+
+  exitSettings(){
+    this.setLocalVariables();
+    this.showSettings = false;
+  }
+
+  setLocalVariables(){
+    let gameItems = {
+      minNumberRange: this.minNumberRange,
+      maxNumberRange: this.maxNumberRange,
+      numberOfNumbers: this.numberOfNumbers,
+      showGreaterThanSymbol: this.showGreaterThanSymbol,
+      showSums: this.showSums
+    };
+    console.log('game itemmssss');
+    console.log(gameItems);
+    sessionStorage.setItem('gameItems', JSON.stringify(gameItems));
+  }
+
   startGame(){
+    this.setLocalVariables();
+    this.leftSum = 0;
+    this.rightSum = 0;
     this.winStatus = false;
     this.showSettings = false;
     this.numBlocks = [];
@@ -66,6 +128,7 @@ export class AppComponent implements OnInit {
   }
 
   numberClick(event, index) {
+    console.log('numClick');
     let clickXPosition = event.offsetX;
     let widthOfClickedElem = document.getElementsByClassName('gridItem')[index - 1].clientWidth;
       if(widthOfClickedElem / 2 > clickXPosition) {
@@ -108,22 +171,51 @@ export class AppComponent implements OnInit {
   }
 
   checkForWin(){
-    let leftSum = 0;
-    let rightSum = 0;
+    this.leftSum = 0;
+    this.rightSum = 0;
     let totalLeftAndRightBlocks = 0;
     this.numBlocks.forEach(numBlock => {
       if(numBlock.leftStrValue !== '') {
-        leftSum = leftSum + numBlock.numValue;
+        this.leftSum = this.leftSum + numBlock.numValue;
         totalLeftAndRightBlocks ++;
       } else if(numBlock.rightStrValue !== ''){
-        rightSum = rightSum + numBlock.numValue;
+        this.rightSum = this.rightSum + numBlock.numValue;
         totalLeftAndRightBlocks++;
       }
     });
-    if(leftSum === rightSum && totalLeftAndRightBlocks === this.numBlocks.length) {
+    if(this.leftSum === this.rightSum && totalLeftAndRightBlocks === this.numBlocks.length) {
       this.winStatus = true;
     } else {
       this.winStatus = false;
+    }
+    if (this.leftSum > this.rightSum){
+      document.getElementById('greaterThanSymbol').innerHTML='>';
+    } else if (this.rightSum > this.leftSum){
+      document.getElementById('greaterThanSymbol').innerHTML='<';
+    } else if (this.leftSum === this.rightSum) {
+      document.getElementById('greaterThanSymbol').innerHTML='=';
+    }
+  }
+
+  toggleGreaterThanSymbol(){
+    if(this.isInit !== true){
+      if(this.toggleCount === 1){
+        this.showGreaterThanSymbol = !this.showGreaterThanSymbol;
+        this.toggleCount = 0;
+      } else {
+        this.toggleCount++;
+      }
+    }
+  }
+
+  toggleSums(){
+    if(this.isInit !== true){
+      if(this.toggleSumCount === 1){
+        this.showSums = !this.showSums;
+        this.toggleSumCount = 0;
+      } else {
+        this.toggleSumCount++;
+      }
     }
   }
 
